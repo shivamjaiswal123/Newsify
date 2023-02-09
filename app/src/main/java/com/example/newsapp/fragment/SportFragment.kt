@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.R
 import com.example.newsapp.adapter.NewsAdapter
 import com.example.newsapp.network.NewsRepository
-import kotlinx.android.synthetic.main.fragment_sport.*
+import kotlinx.android.synthetic.main.fragment_sport.recyclerView
+import kotlinx.coroutines.*
 
 class SportFragment : Fragment() {
 
@@ -19,12 +20,12 @@ class SportFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val newsRepository = NewsRepository()
-        newsRepository.getNewsApi("sport") { newsList ->
-            Log.d("logs", "sport called")
-            recyclerView.adapter = NewsAdapter(requireContext(), newsList)
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-
+        CoroutineScope(Dispatchers.IO).launch {
+            val news = async(Dispatchers.IO) { newsRepository.getNewsFromApi("sport") }
+            withContext(Dispatchers.Main){
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recyclerView.adapter = NewsAdapter(requireContext(), news.await())
+            }
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_sport, container, false)

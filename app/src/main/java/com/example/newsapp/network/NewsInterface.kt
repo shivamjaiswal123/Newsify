@@ -2,6 +2,7 @@ package com.example.newsapp.network
 
 import com.example.newsapp.model.News
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,7 +12,7 @@ interface NewsInterface {
     fun getTopHeadlines(@Query("country")country: String, @Query("page")page: Int): Call<News>
 
     @GET("/v2/top-headlines?apiKey=$API")
-    fun getTopHeadlines(@Query("country")country: String, @Query("category")category: String, @Query("page")page: Int): Call<News>
+    suspend fun getTopHeadlines(@Query("country")country: String, @Query("category")category: String, @Query("page")page: Int): Response<News>
 }
 
 //https://newsapi.org/v2/top-headlines?apiKey=081085a5ca9e42d88b110d7bdc05d6e6&country=us&page=1

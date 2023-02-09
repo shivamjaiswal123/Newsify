@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.R
 import com.example.newsapp.adapter.NewsAdapter
 import com.example.newsapp.network.NewsRepository
+import kotlinx.android.synthetic.main.fragment_general.*
 import kotlinx.android.synthetic.main.fragment_tech.*
+import kotlinx.android.synthetic.main.fragment_tech.recyclerView
+import kotlinx.coroutines.*
 
 
 class TechFragment : Fragment() {
@@ -20,10 +23,12 @@ class TechFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val newsRepository = NewsRepository()
-        newsRepository.getNewsApi("technology") { newsList ->
-            Log.d("logs", "technology called")
-            recyclerView.adapter = NewsAdapter(requireContext(), newsList)
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        CoroutineScope(Dispatchers.IO).launch {
+            val news = async(Dispatchers.IO) { newsRepository.getNewsFromApi("technology") }
+            withContext(Dispatchers.Main){
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recyclerView.adapter = NewsAdapter(requireContext(), news.await())
+            }
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_tech, container, false)

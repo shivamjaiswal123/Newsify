@@ -11,6 +11,7 @@ import com.example.newsapp.R
 import com.example.newsapp.adapter.NewsAdapter
 import com.example.newsapp.network.NewsRepository
 import kotlinx.android.synthetic.main.fragment_general.*
+import kotlinx.coroutines.*
 
 class GeneralFragment : Fragment() {
     override fun onCreateView(
@@ -18,10 +19,12 @@ class GeneralFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val newsRepository = NewsRepository()
-        newsRepository.getNewsApi("general") { newsList ->
-            Log.d("logs", "general called")
-            recyclerView.adapter = NewsAdapter(requireContext(), newsList)
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        CoroutineScope(Dispatchers.IO).launch {
+            val news = async(Dispatchers.IO) { newsRepository.getNewsFromApi("general") }
+            withContext(Dispatchers.Main){
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recyclerView.adapter = NewsAdapter(requireContext(), news.await())
+            }
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_general, container, false)

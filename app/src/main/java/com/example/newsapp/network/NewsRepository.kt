@@ -2,34 +2,25 @@ package com.example.newsapp.network
 
 import android.util.Log
 import com.example.newsapp.model.Article
-import com.example.newsapp.model.News
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import kotlin.reflect.KFunction0
+
 
 class NewsRepository {
-    fun getNewsApi(cat: String, callback: (List<Article>) -> Unit) {
-        var newsList = mutableListOf<Article>()
+     suspend fun getNewsFromApi(cat: String): List<Article> {
         val news = RetrofitHelper.service.getTopHeadlines("in", cat, 1)
-
-        news.enqueue(object : Callback<News?> {
-            override fun onResponse(call: Call<News?>, response: Response<News?>) {
-                val news = response.body()?.articles
-                if (news != null) {
-                    news.forEach {
-                        if (it.author != null) {
-                            newsList.add(it)
-                        }
+        val articles = mutableListOf<Article>()
+        if(news.isSuccessful){
+            val body = news.body()?.articles
+            if (body != null) {
+                //not adding articles which has no author/image/description
+                body.forEach {
+                    if(it.author != null && it.urlToImage != null){
+                        articles.add(it)
                     }
-                    callback(newsList)
                 }
+            }else{
+                Log.d("Error", "API call failed")
             }
-
-            override fun onFailure(call: Call<News?>, t: Throwable) {
-                Log.d("error", "onFailure:Error in fetching the news")
-            }
-        })
+        }
+        return articles
     }
 }

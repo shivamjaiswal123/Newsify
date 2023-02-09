@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.R
 import com.example.newsapp.adapter.NewsAdapter
 import com.example.newsapp.network.NewsRepository
-import kotlinx.android.synthetic.main.fragment_business.*
+import kotlinx.android.synthetic.main.fragment_business.recyclerView
+import kotlinx.coroutines.*
 
 
 class BusinessFragment : Fragment() {
@@ -19,10 +20,12 @@ class BusinessFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val newsRepository = NewsRepository()
-        newsRepository.getNewsApi("business") { newsList ->
-            Log.d("logs", "business called")
-            recyclerView.adapter = NewsAdapter(requireContext(), newsList)
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        CoroutineScope(Dispatchers.IO).launch {
+            val news = async(Dispatchers.IO) { newsRepository.getNewsFromApi("business") }
+            withContext(Dispatchers.Main){
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                recyclerView.adapter = NewsAdapter(requireContext(), news.await())
+            }
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_business, container, false)
