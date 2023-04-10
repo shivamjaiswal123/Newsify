@@ -13,16 +13,16 @@ import com.example.newsapp.R
 import com.example.newsapp.model.Article
 import kotlinx.android.synthetic.main.item_layout.view.*
 
-class NewsAdapter(val context: Context, val articles: List<Article>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(val context: Context, val articles: List<Article>) : 
+RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_layout,parent,false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.title.text = articles[position].title
-        holder.des.text = articles[position].description
+        val items = articles[position]
+        holder.bind(items)
         Glide.with(context).load(articles[position].urlToImage).into(holder.image)
         holder.itemView.setOnClickListener {
             val intent = Intent(context, NewsActivity::class.java)
@@ -39,5 +39,10 @@ class NewsAdapter(val context: Context, val articles: List<Article>) : RecyclerV
         val image = itemView.news_image
         val title = itemView.news_title
         val des = itemView.news_description
+
+        fun  bind(item:Article){
+            title.text = item.title
+            des.text = item.description
+        }
     }
 }
