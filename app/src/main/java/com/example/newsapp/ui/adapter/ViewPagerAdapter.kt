@@ -1,10 +1,15 @@
-package com.example.newsapp.adapter
+package com.example.newsapp.ui.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.newsapp.fragment.*
+import com.example.newsapp.ui.screens.fragment.BusinessFragment
+import com.example.newsapp.ui.screens.fragment.EntertainmentFragment
+import com.example.newsapp.ui.screens.fragment.GeneralFragment
+import com.example.newsapp.ui.screens.fragment.ScienceFragment
+import com.example.newsapp.ui.screens.fragment.SportFragment
+import com.example.newsapp.ui.screens.fragment.TechFragment
 
 const val TABS_NUMS = 6
 class ViewPagerAdapter(fm: FragmentManager, lifecycle: Lifecycle): FragmentStateAdapter(fm, lifecycle) {
