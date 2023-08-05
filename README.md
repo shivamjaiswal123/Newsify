@@ -12,5 +12,6 @@ An android news app made using kotlin that helps users stay up-to-date on the la
 * Kotlin
 * XML
 * Rest API (Retrofit)
+* Dependency Injection with Hilt
 * ViewPager2
 * Glide
