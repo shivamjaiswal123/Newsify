@@ -31,10 +31,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tabIndicatorColor="#1E90FF"
+            app:tabIndicatorColor="@color/black"
             app:tabMode="scrollable"
-            app:tabSelectedTextColor="#1E90FF"
-            app:tabTextColor="#808080" />
+            app:tabSelectedTextColor="@color/black"
+            app:tabTextColor="@color/tabTextColor" />
 
 
     </com.google.android.material.appbar.AppBarLayout>

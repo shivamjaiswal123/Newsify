@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.view.isVisible
 import com.example.newsapp.R
 import com.example.newsapp.databinding.ActivityNewsBinding
 
@@ -25,7 +26,7 @@ class NewsActivity : AppCompatActivity() {
             binding.webView.webViewClient = object :WebViewClient(){
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    binding.progressBar.visibility = View.GONE
+                    binding.progressBar.isVisible = false
                 }
             }
 
