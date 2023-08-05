@@ -1,18 +1,23 @@
 package com.example.newsapp.data.repository
 
-import android.util.Log
-import com.example.newsapp.data.model.Article
-import com.example.newsapp.data.network.RetrofitHelper
+
+import com.example.newsapp.data.model.News
+import com.example.newsapp.data.network.NewsInterface
+import com.example.newsapp.utills.Response
+import javax.inject.Inject
 
 
-class NewsRepository {
-    companion object {
-        suspend fun getNewsFromApi(cat: String): List<Article>? {
-            val response = RetrofitHelper.service.getTopHeadlines("in", cat, 1)
-            if (response.isSuccessful) {
-                return response.body()?.articles
+class NewsRepository @Inject constructor(private val newsApi: NewsInterface) : INewsRepository {
+    override suspend fun getNews(cat: String): Response<News> {
+        return try {
+            val response = newsApi.getTopHeadlines("in", cat, 1)
+            if (response.isSuccessful && response.body() != null) {
+                Response.Success(response.body()!!)
+            } else {
+                Response.Error(response.message() ?: "Something went wrong !!")
             }
-            return null
+        } catch (e: Exception) {
+            Response.Error("An error occurred: ${e.message}")
         }
     }
 }

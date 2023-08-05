@@ -1,22 +1,25 @@
 package com.example.newsapp.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.newsapp.data.model.Article
-import com.example.newsapp.data.repository.NewsRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.viewModelScope
+import com.example.newsapp.data.model.News
+import com.example.newsapp.data.repository.INewsRepository
+import com.example.newsapp.utills.Response
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel: ViewModel() {
-    private var _articles = MutableLiveData<List<Article>>()
-    val article: LiveData<List<Article>> get() = _articles
+@HiltViewModel
+class MainViewModel @Inject constructor(private val newsRepository: INewsRepository): ViewModel() {
+    private var _articles = MutableLiveData<Response<News>>()
+    val article: LiveData<Response<News>> get() = _articles
 
     fun getNews(cat: String){
-        CoroutineScope(Dispatchers.IO).launch {
-            NewsRepository.getNewsFromApi(cat)?.let {
+        _articles.value = Response.Loading()
+        viewModelScope.launch {
+            newsRepository.getNews(cat).let {
                 _articles.postValue(it)
             }
         }

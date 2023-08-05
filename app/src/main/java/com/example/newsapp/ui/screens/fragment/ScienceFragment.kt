@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,12 +15,15 @@ import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentScienceBinding
 import com.example.newsapp.ui.adapter.NewsAdapter
 import com.example.newsapp.ui.screens.activity.NewsActivity
+import com.example.newsapp.utills.Response
 import com.example.newsapp.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ScienceFragment : Fragment() {
     lateinit var binding: FragmentScienceBinding
     lateinit var viewModel: MainViewModel
-    lateinit var adapter: NewsAdapter
+    private lateinit var adapter: NewsAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,7 +34,21 @@ class ScienceFragment : Fragment() {
         setupRecyclerView()
 
         viewModel.article.observe(viewLifecycleOwner, Observer {
-            adapter.setData(it)
+            binding.progressBar.isVisible = false
+            when (it) {
+                is Response.Success -> {
+                    adapter.setData(it.data?.articles!!)
+                }
+
+                is Response.Error -> {
+                    Toast.makeText(requireContext(), it.errorMsg.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is Response.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+            }
         })
         viewModel.getNews("science")
 
@@ -37,7 +56,7 @@ class ScienceFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = NewsAdapter{
+        adapter = NewsAdapter {
             val intent = Intent(requireContext(), NewsActivity::class.java)
             intent.putExtra("URL", it.url)
             this.startActivity(intent)
